@@ -1,12 +1,14 @@
 <template>
   <div class="repo-list">
     <h1 class="repo-list__header">My Hub</h1>
-    <input type="search" placeholder="Search Repositories" v-model="search"/>
+    <input type="search" placeholder="Search Repositories" v-model="search" />
     <div class="loading" v-if="isLoading">Loading...</div>
     <div class="error" v-if="error">{{ error }}</div>
     <div v-else class="repo-list__grid">
       <div v-for="repo in currentRepos" :key="repo.id" class="repo-list__item">
-        <router-link :to="{ name: 'RepoDetails', params: { id: repo.id } }">{{ repo.name }}</router-link>
+        <router-link :to="{ name: 'RepoDetails', params: { id: repo.id } }">{{
+          repo.name
+        }}</router-link>
         <div class="repo-list_created">Created: {{ dateOnly(repo.created_at) }}</div>
         <div class="repo-list_stars">Stars: {{ repo.stargazers_count }}</div>
       </div>
@@ -20,71 +22,67 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue'
 
 export default {
   name: 'RepoList',
   setup() {
-    const repos = ref([]);
-    const isLoading = ref(true);
-    const error = ref(null);
-    const search = ref('');
-    const accessToken = import.meta.env.VITE_GITHUB_TOKEN;
-    
+    const repos = ref([])
+    const isLoading = ref(true)
+    const error = ref(null)
+    const search = ref('')
+
     const fetchRepos = async () => {
       try {
-        const res = await fetch('https://api.github.com/users/Aderemi90/repos', {
-          headers: {
-            Authorization: `token ${accessToken}`
-          }
-        });
+        const res = await fetch('https://api.github.com/users/Aderemi90/repos')
         if (!res.ok) {
-          throw new Error('Could not fetch data');
+          throw new Error('Could not fetch data')
         }
-        const data = await res.json();
-        repos.value = data;
-        isLoading.value = false;
+        const data = await res.json()
+        repos.value = data
+        isLoading.value = false
       } catch (err) {
-        error.value = err.message;
-        isLoading.value = false;
+        error.value = err.message
+        isLoading.value = false
       }
-    };
-    fetchRepos();
+    }
+
+    fetchRepos()
 
     const dateOnly = (dateString) => {
-      const date = new Date(dateString);
-      return date.toISOString().split('T')[0];
-    };
+      const date = new Date(dateString)
+      return date.toISOString().split('T')[0]
+    }
 
-    onMounted(fetchRepos);
+    onMounted(fetchRepos)
     const filteredRepos = computed(() => {
       if (!search.value) {
-        return repos.value;
+        return repos.value
       }
-      return repos.value.filter(repo =>
+      return repos.value.filter((repo) =>
         repo.name.toLowerCase().includes(search.value.toLowerCase())
-      );
-    });
+      )
+    })
 
-    const itemsPerPage = ref(5); // Number of items per page
-    const currentPage = ref(1); // Current page number
-    const totalPages = computed(() => Math.ceil(filteredRepos.value.length / itemsPerPage.value));
+    const itemsPerPage = ref(5) // Number of items per page
+    const currentPage = ref(1) // Current page number
+    const totalPages = computed(() => Math.ceil(filteredRepos.value.length / itemsPerPage.value))
     const currentRepos = computed(() => {
-      const start = (currentPage.value - 1) * itemsPerPage.value;
-      return filteredRepos.value.slice(start, start + itemsPerPage.value);
-    });
+      const start = (currentPage.value - 1) * itemsPerPage.value
+      return filteredRepos.value.slice(start, start + itemsPerPage.value)
+    })
 
     const nextPage = () => {
       if (currentPage.value < totalPages.value) {
-        currentPage.value++;
+        currentPage.value++
       }
-    };
+    }
 
     const prevPage = () => {
       if (currentPage.value > 1) {
-        currentPage.value--;
+        currentPage.value--
       }
-    };
+    }
 
     return {
       search,
@@ -95,10 +93,10 @@ export default {
       prevPage,
       isLoading,
       error,
-      dateOnly,
-    };
-  },
-};
+      dateOnly
+    }
+  }
+}
 </script>
 
 <style>
@@ -136,7 +134,6 @@ input {
   transition: transform 0.2s;
   list-style: none;
   text-decoration: none;
-
 }
 
 .repo-list__pagination {
@@ -150,7 +147,8 @@ input {
   margin: 0 10px;
 }
 
-.loading, .error {
+.loading,
+.error {
   text-align: center;
   margin-top: 20px;
 }
@@ -167,10 +165,10 @@ input {
   margin: 10px 0;
   color: #666;
 }
-input{
+input {
   margin-bottom: 50px;
 }
-button{
+button {
   padding: 20px;
   border-radius: 5px;
   background-color: rgb(57, 101, 246);

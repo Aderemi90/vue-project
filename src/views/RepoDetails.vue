@@ -48,19 +48,16 @@ const getRepo = async () => {
   try {
     const response = await fetch(`https://api.github.com/repositories/${id}`, {
       method: 'GET',
-      headers: {
-        Authorization: import.meta.env.VITE_TOKEN
-      }
-    })
-    if (!response.ok) throw new Error('failed to fetch repository')
-    const data = await response.json()
-    repo.value = data
-    loading.value = false
+    });
+    if (!response.ok) throw new Error('failed to fetch repository');
+    const data = await response.json();
+    repo.value = data;
+    loading.value = false;
   } catch (error) {
-    console.error(error)
-    loading.value = false
+    console.error(error);
+    loading.value = false;
   }
-}
+};
 
 onMounted(getRepo)
 
